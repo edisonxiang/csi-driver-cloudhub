@@ -17,11 +17,14 @@ limitations under the License.
 package cloudhub
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/golang/glog"
 	"golang.org/x/net/context"
@@ -29,6 +32,9 @@ import (
 
 	"github.com/container-storage-interface/spec/lib/go/csi"
 	"github.com/kubernetes-csi/csi-lib-utils/protosanitizer"
+
+	"github.com/kubeedge/beehive/pkg/core/model"
+	"github.com/kubeedge/kubeedge/common/constants"
 )
 
 // NewNonBlockingGRPCServer creates a new nonblocking server
@@ -124,4 +130,54 @@ func logGRPC(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, h
 		glog.V(5).Infof("GRPC response: %+v", protosanitizer.StripSecrets(resp))
 	}
 	return resp, err
+}
+
+// Constant defines csi related parameters
+const (
+	CSIResourceTypeVolume                     = "volume"
+	CSIOperationTypeCreateVolume              = "createvolume"
+	CSIOperationTypeDeleteVolume              = "deletevolume"
+	CSIOperationTypeControllerPublishVolume   = "controllerpublishvolume"
+	CSIOperationTypeControllerUnpublishVolume = "controllerunpublishvolume"
+	CSISyncMsgRespTimeout                     = 1 * time.Minute
+
+	CSIGroupResource    = "resource"
+	CSINamespaceDefault = "default"
+)
+
+// buildResource return a string as "beehive/pkg/core/model".Message.Router.Resource
+func buildResource(nodeID, namespace, resourceType, resourceID string) (resource string, err error) {
+	if nodeID == "" || namespace == "" || resourceType == "" {
+		err = fmt.Errorf("Required parameter are not set (node id, namespace or resource type)")
+		return
+	}
+	resource = fmt.Sprintf("%s%s%s%s%s%s%s", "node", constants.ResourceSep, nodeID, constants.ResourceSep, namespace, constants.ResourceSep, resourceType)
+	if resourceID != "" {
+		resource += fmt.Sprintf("%s%s", constants.ResourceSep, resourceID)
+	}
+	return
+}
+
+// send2CloudHub sends messages to CloudHub
+func send2CloudHub(context string) string {
+	us := NewUnixDomainSocket("unix:///tmp/uds.socket")
+	r := us.Connect()
+	res := us.Send(r, context)
+	return res
+}
+
+// extractMessage extracts message
+func extractMessage(context string) (*model.Message, error) {
+	var msg *model.Message
+	if context != "" {
+		err := json.Unmarshal([]byte(context), &msg)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := errors.New("Failed with error: context is empty")
+		glog.Errorf("%v", err)
+		return nil, err
+	}
+	return msg, nil
 }

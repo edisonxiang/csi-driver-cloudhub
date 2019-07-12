@@ -10,6 +10,17 @@
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:4d02824a56d268f74a6b6fdd944b20b58a77c3d70e81008b3ee0c4f1a6777340"
+  name = "github.com/gogo/protobuf"
+  packages = [
+    "proto",
+    "sortkeys",
+  ]
+  pruneopts = "UT"
+  revision = "ba06b47c162d49f2af050fb4c75bcbc86a159d5c"
+  version = "v1.2.1"
+
+[[projects]]
   branch = "master"
   digest = "1:1ba1d79f2810270045c328ae5d674321db34e3aae468eb4233883b473c5c0467"
   name = "github.com/golang/glog"
@@ -35,12 +46,36 @@
   version = "v1.3.1"
 
 [[projects]]
+  digest = "1:a6181aca1fd5e27103f9a920876f29ac72854df7345a39f3b01e61c8c94cc8af"
+  name = "github.com/google/gofuzz"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f140a6486e521aad38f5917de355cbf147cc0496"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:582b704bebaa06b48c29b0cec224a6058a09c86883aaddabde889cd1a5f73e1b"
   name = "github.com/google/uuid"
   packages = ["."]
   pruneopts = "UT"
   revision = "0cd6bf5da1e1c83f8b45653022c74f71af0538a4"
   version = "v1.1.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:72f7322c70f53d0a42d1655c8a494e7b738eddbc08b45c99d61bc0d0f660ac4e"
+  name = "github.com/kubeedge/beehive"
+  packages = ["pkg/core/model"]
+  pruneopts = "UT"
+  revision = "06e0cfa222f7190d54740dd11f0fc1bc9e8085cb"
+
+[[projects]]
+  digest = "1:867c9e69aa4d423e94e49c97dcba52649373b15e7cf695e5f5a4300fe2f5cc5f"
+  name = "github.com/kubeedge/kubeedge"
+  packages = ["common/constants"]
+  pruneopts = "UT"
+  revision = "81f652b559811c3d0a6348dd35c3b213c556d37d"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:5f039a8e43dc5b00adee7b38e39baf6c36f607372940c11975f00ec9c5f298ae"
@@ -57,6 +92,14 @@
   pruneopts = "UT"
   revision = "adf5a7427709b9deb95d29d3fa8a2bf9cfd388f1"
   version = "v1.2"
+
+[[projects]]
+  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
@@ -157,12 +200,68 @@
   revision = "1d89a3c832915b2314551c1d2a506874d62e53f7"
   version = "v1.22.0"
 
+[[projects]]
+  digest = "1:2d1fbdc6777e5408cabeb02bf336305e724b925ff4546ded0fa8715a7267922a"
+  name = "gopkg.in/inf.v0"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d2d2541c53f18d2a059457998ce2876cc8e67cbf"
+  version = "v0.9.1"
+
+[[projects]]
+  digest = "1:9d5352ef8744149aca21ca4f7cd21eac9f05932edda625c2b343edd105b6acca"
+  name = "k8s.io/api"
+  packages = ["core/v1"]
+  pruneopts = "UT"
+  revision = "7cf5895f2711098d7d9527db0a4a49fb0dff7de2"
+  version = "kubernetes-1.15.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:10a7738495b85f46f442d3fb1dae6ee636e0f79a939210d056dbad7d1d55c61e"
+  name = "k8s.io/apimachinery"
+  packages = [
+    "pkg/api/resource",
+    "pkg/apis/meta/v1",
+    "pkg/conversion",
+    "pkg/conversion/queryparams",
+    "pkg/fields",
+    "pkg/labels",
+    "pkg/runtime",
+    "pkg/runtime/schema",
+    "pkg/selection",
+    "pkg/types",
+    "pkg/util/errors",
+    "pkg/util/intstr",
+    "pkg/util/json",
+    "pkg/util/naming",
+    "pkg/util/net",
+    "pkg/util/runtime",
+    "pkg/util/sets",
+    "pkg/util/validation",
+    "pkg/util/validation/field",
+    "pkg/watch",
+    "third_party/forked/golang/reflect",
+  ]
+  pruneopts = "UT"
+  revision = "391ed67afa7b3c44b92d0913eb5b3009c5905313"
+
+[[projects]]
+  digest = "1:c283ca5951eb7d723d3300762f96ff94c2ea11eaceb788279e2b7327f92e4f2a"
+  name = "k8s.io/klog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "d98d8acdac006fb39831f1b25640813fef9c314f"
+  version = "v0.3.3"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/container-storage-interface/spec/lib/go/csi",
     "github.com/golang/glog",
+    "github.com/kubeedge/beehive/pkg/core/model",
+    "github.com/kubeedge/kubeedge/common/constants",
     "github.com/kubernetes-csi/csi-lib-utils/protosanitizer",
     "github.com/pborman/uuid",
     "golang.org/x/net/context",

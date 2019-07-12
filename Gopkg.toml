@@ -49,6 +49,10 @@
   name = "google.golang.org/grpc"
   version = "1.22.0"
 
+[[override]]
+  name = "k8s.io/api"
+  version = "kubernetes-1.15.0"
+
 [prune]
   go-tests = true
   unused-packages = true

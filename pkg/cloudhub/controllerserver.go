@@ -17,6 +17,7 @@ limitations under the License.
 package cloudhub
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/golang/glog"
@@ -26,6 +27,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/container-storage-interface/spec/lib/go/csi"
+
+	"github.com/kubeedge/beehive/pkg/core/model"
 )
 
 const (
@@ -103,7 +106,59 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 
 	// TODO invoke create volume
 	volumeID := uuid.NewUUID().String()
+
+	// CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error)
+
+	// Build message struct
+	msg := model.NewMessage("")
+	resource, err := buildResource("EdgeNode1", CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
+	if err != nil {
+		glog.Errorf("Build message resource failed with error: %s", err)
+		return nil, err
+	}
+	msg.Content = req
+	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeCreateVolume)
+
+	// Marshal message
+	reqData, err := json.Marshal(msg)
+	if err != nil {
+		glog.Errorf("Marshal request failed with error: %v", err)
+		return nil, err
+	}
+
+	// Send message to CloudHub
+	resdata := send2CloudHub(string(reqData))
+
+	// Unmarshal message
+	result, err := extractMessage(resdata)
+	if err != nil {
+		glog.Errorf("Unmarshal response failed with error: %v", err)
+		return nil, err
+	}
+
+	// Get message content
+	var data []byte
+	switch result.Content.(type) {
+	case []byte:
+		data = result.GetContent().([]byte)
+	default:
+		var err error
+		data, err = json.Marshal(result.GetContent())
+		if err != nil {
+			glog.Errorf("Marshal result content with error: %s", err)
+			return nil, err
+		}
+	}
+
+	// Unmarshal message content
 	createVolumeResponse := &csi.CreateVolumeResponse{}
+	err = json.Unmarshal(data, createVolumeResponse)
+	if err != nil {
+		glog.Errorf("Unmarshal message content with error: %s", err)
+		return nil, err
+	}
+
+	/*createVolumeResponse := &csi.CreateVolumeResponse{}
 	if req.GetVolumeContentSource() != nil {
 		createVolumeResponse = &csi.CreateVolumeResponse{
 			Volume: &csi.Volume{
@@ -121,7 +176,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 				VolumeContext: req.GetParameters(),
 			},
 		}
-	}
+	}*/
 	return createVolumeResponse, nil
 }
 
