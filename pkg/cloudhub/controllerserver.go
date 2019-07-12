@@ -104,10 +104,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		return nil, status.Errorf(codes.OutOfRange, "Requested capacity %d exceeds maximum allowed %d", capacity, maxStorageCapacity)
 	}
 
-	// TODO invoke create volume
 	volumeID := uuid.NewUUID().String()
-
-	// CreateVolume(ctx context.Context, req *csi.CreateVolumeRequest) (*csi.CreateVolumeResponse, error)
 
 	// Build message struct
 	msg := model.NewMessage("")
@@ -191,10 +188,58 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 		return nil, err
 	}
 
-	// TODO invoke delete volume
+	// Build message struct
+	msg := model.NewMessage("")
+	resource, err := buildResource("EdgeNode1", CSINamespaceDefault, CSIResourceTypeVolume, req.GetVolumeId())
+	if err != nil {
+		glog.Errorf("Build message resource failed with error: %s", err)
+		return nil, err
+	}
+	msg.Content = req
+	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeDeleteVolume)
+
+	// Marshal message
+	reqData, err := json.Marshal(msg)
+	if err != nil {
+		glog.Errorf("Marshal request failed with error: %v", err)
+		return nil, err
+	}
+
+	// Send message to CloudHub
+	resdata := send2CloudHub(string(reqData))
+
+	// Unmarshal message
+	result, err := extractMessage(resdata)
+	if err != nil {
+		glog.Errorf("Unmarshal response failed with error: %v", err)
+		return nil, err
+	}
+
+	// Get message content
+	var data []byte
+	switch result.Content.(type) {
+	case []byte:
+		data = result.GetContent().([]byte)
+	default:
+		var err error
+		data, err = json.Marshal(result.GetContent())
+		if err != nil {
+			glog.Errorf("Marshal result content with error: %s", err)
+			return nil, err
+		}
+	}
+
+	// Unmarshal message content
+	deleteVolumeResponse := &csi.DeleteVolumeResponse{}
+	err = json.Unmarshal(data, deleteVolumeResponse)
+	if err != nil {
+		glog.Errorf("Unmarshal message content with error: %s", err)
+		return nil, err
+	}
+
 	glog.V(4).Infof("volume deleted ok: %s", req.GetVolumeId())
 
-	return &csi.DeleteVolumeResponse{}, nil
+	return deleteVolumeResponse, nil
 }
 
 func (cs *controllerServer) ControllerGetCapabilities(ctx context.Context, req *csi.ControllerGetCapabilitiesRequest) (*csi.ControllerGetCapabilitiesResponse, error) {
@@ -217,14 +262,61 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		return nil, status.Error(codes.InvalidArgument, "ControllerPublishVolume Instance ID must be provided")
 	}
 
-	// TODO invoke controller publish volume
+	// Build message struct
+	msg := model.NewMessage("")
+	resource, err := buildResource(instanceID, CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
+	if err != nil {
+		glog.Errorf("Build message resource failed with error: %s", err)
+		return nil, err
+	}
+	msg.Content = req
+	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeControllerPublishVolume)
 
-	// Publish Volume Info
+	// Marshal message
+	reqData, err := json.Marshal(msg)
+	if err != nil {
+		glog.Errorf("Marshal request failed with error: %v", err)
+		return nil, err
+	}
+
+	// Send message to CloudHub
+	resdata := send2CloudHub(string(reqData))
+
+	// Unmarshal message
+	result, err := extractMessage(resdata)
+	if err != nil {
+		glog.Errorf("Unmarshal response failed with error: %v", err)
+		return nil, err
+	}
+
+	// Get message content
+	var data []byte
+	switch result.Content.(type) {
+	case []byte:
+		data = result.GetContent().([]byte)
+	default:
+		var err error
+		data, err = json.Marshal(result.GetContent())
+		if err != nil {
+			glog.Errorf("Marshal result content with error: %s", err)
+			return nil, err
+		}
+	}
+
+	// Unmarshal message content
+	controllerPublishVolumeResponse := &csi.ControllerPublishVolumeResponse{}
+	err = json.Unmarshal(data, controllerPublishVolumeResponse)
+	if err != nil {
+		glog.Errorf("Unmarshal message content with error: %s", err)
+		return nil, err
+	}
+	return controllerPublishVolumeResponse, nil
+
+	/* Publish Volume Info
 	pvInfo := map[string]string{}
-
 	return &csi.ControllerPublishVolumeResponse{
 		PublishContext: pvInfo,
-	}, nil
+	}, nil*/
 }
 
 func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *csi.ControllerUnpublishVolumeRequest) (*csi.ControllerUnpublishVolumeResponse, error) {
@@ -241,9 +333,55 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		return nil, status.Error(codes.InvalidArgument, "ControllerUnpublishVolume Instance ID must be provided")
 	}
 
-	// TODO invoke controller unpublish volume
+	// Build message struct
+	msg := model.NewMessage("")
+	resource, err := buildResource(instanceID, CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
+	if err != nil {
+		glog.Errorf("Build message resource failed with error: %s", err)
+		return nil, err
+	}
+	msg.Content = req
+	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeControllerUnpublishVolume)
 
-	return &csi.ControllerUnpublishVolumeResponse{}, nil
+	// Marshal message
+	reqData, err := json.Marshal(msg)
+	if err != nil {
+		glog.Errorf("Marshal request failed with error: %v", err)
+		return nil, err
+	}
+
+	// Send message to CloudHub
+	resdata := send2CloudHub(string(reqData))
+
+	// Unmarshal message
+	result, err := extractMessage(resdata)
+	if err != nil {
+		glog.Errorf("Unmarshal response failed with error: %v", err)
+		return nil, err
+	}
+
+	// Get message content
+	var data []byte
+	switch result.Content.(type) {
+	case []byte:
+		data = result.GetContent().([]byte)
+	default:
+		var err error
+		data, err = json.Marshal(result.GetContent())
+		if err != nil {
+			glog.Errorf("Marshal result content with error: %s", err)
+			return nil, err
+		}
+	}
+
+	// Unmarshal message content
+	controllerUnpublishVolumeResponse := &csi.ControllerUnpublishVolumeResponse{}
+	err = json.Unmarshal(data, controllerUnpublishVolumeResponse)
+	if err != nil {
+		glog.Errorf("Unmarshal message content with error: %s", err)
+		return nil, err
+	}
+	return controllerUnpublishVolumeResponse, nil
 }
 
 func (cs *controllerServer) ValidateVolumeCapabilities(ctx context.Context, req *csi.ValidateVolumeCapabilitiesRequest) (*csi.ValidateVolumeCapabilitiesResponse, error) {
