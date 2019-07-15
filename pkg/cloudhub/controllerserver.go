@@ -108,7 +108,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 
 	// Build message struct
 	msg := model.NewMessage("")
-	resource, err := buildResource("EdgeNode1", CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
+	resource, err := buildResource("fb4ebb70-2783-42b8-b3ef-63e2fd6d242e", CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
 	if err != nil {
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
@@ -190,7 +190,7 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 
 	// Build message struct
 	msg := model.NewMessage("")
-	resource, err := buildResource("EdgeNode1", CSINamespaceDefault, CSIResourceTypeVolume, req.GetVolumeId())
+	resource, err := buildResource("fb4ebb70-2783-42b8-b3ef-63e2fd6d242e", CSINamespaceDefault, CSIResourceTypeVolume, req.GetVolumeId())
 	if err != nil {
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
@@ -264,7 +264,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 
 	// Build message struct
 	msg := model.NewMessage("")
-	resource, err := buildResource(instanceID, CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
+	resource, err := buildResource("fb4ebb70-2783-42b8-b3ef-63e2fd6d242e", CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
 	if err != nil {
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
@@ -335,7 +335,7 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 
 	// Build message struct
 	msg := model.NewMessage("")
-	resource, err := buildResource(instanceID, CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
+	resource, err := buildResource("fb4ebb70-2783-42b8-b3ef-63e2fd6d242e", CSINamespaceDefault, CSIResourceTypeVolume, volumeID)
 	if err != nil {
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
