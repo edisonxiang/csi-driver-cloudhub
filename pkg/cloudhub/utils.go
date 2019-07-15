@@ -160,7 +160,7 @@ func buildResource(nodeID, namespace, resourceType, resourceID string) (resource
 
 // send2CloudHub sends messages to CloudHub
 func send2CloudHub(context string) string {
-	us := NewUnixDomainSocket("unix:///tmp/uds.socket")
+	us := NewUnixDomainSocket("unix:///kubeedge/kubeedge.sock")
 	r := us.Connect()
 	res := us.Send(r, context)
 	return res
