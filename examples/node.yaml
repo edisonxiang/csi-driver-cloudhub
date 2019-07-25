@@ -45,12 +45,13 @@ spec:
           args:
             - "--drivername=csi-hostpath"
             - "--v=5"
-            - "--nodeid=$(NODE_ID)"
+            - "--nodeid=$(KUBE_NODE_NAME)"
             - "--endpoint=unix:///csi/csi.sock"
           env:
-            - name: NODE_ID
+            - name: KUBE_NODE_NAME
               valueFrom:
                 fieldRef:
+                  apiVersion: v1
                   fieldPath: spec.nodeName
           imagePullPolicy: "IfNotPresent"
           volumeMounts:
