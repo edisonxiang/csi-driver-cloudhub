@@ -45,7 +45,7 @@ spec:
           args:
             - "--drivername=csi-hostpath"
             - "--v=5"
-            - "--nodeid=$(KUBE_NODE_NAME)"
+            - "--nodeid=fb4ebb70-2783-42b8-b3ef-63e2fd6d242e"
             - "--endpoint=unix:///csi/csi.sock"
           env:
             - name: KUBE_NODE_NAME
