@@ -121,7 +121,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		glog.Errorf("MarshalToString failed with error: %s", err)
 		return nil, err
 	}
-	glog.Infof("MarshalToString: %s", js)
+	glog.Infof("CreateVolume MarshalToString: %s", js)
 	msg.Content = js
 	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeCreateVolume)
 
@@ -204,7 +204,15 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
 	}
-	msg.Content = req
+
+	m := jsonpb.Marshaler{}
+	js, err := m.MarshalToString(req)
+	if err != nil {
+		glog.Errorf("MarshalToString failed with error: %s", err)
+		return nil, err
+	}
+	glog.Infof("DeleteVolume MarshalToString: %s", js)
+	msg.Content = js
 	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeDeleteVolume)
 
 	// Marshal message
@@ -278,7 +286,15 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
 	}
-	msg.Content = req
+
+	m := jsonpb.Marshaler{}
+	js, err := m.MarshalToString(req)
+	if err != nil {
+		glog.Errorf("MarshalToString failed with error: %s", err)
+		return nil, err
+	}
+	glog.Infof("ControllerPublishVolume MarshalToString: %s", js)
+	msg.Content = js
 	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeControllerPublishVolume)
 
 	// Marshal message
@@ -349,7 +365,15 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
 	}
-	msg.Content = req
+
+	m := jsonpb.Marshaler{}
+	js, err := m.MarshalToString(req)
+	if err != nil {
+		glog.Errorf("MarshalToString failed with error: %s", err)
+		return nil, err
+	}
+	glog.Infof("ControllerUnpublishVolume MarshalToString: %s", js)
+	msg.Content = js
 	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeControllerUnpublishVolume)
 
 	// Marshal message
