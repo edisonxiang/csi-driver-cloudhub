@@ -18,6 +18,7 @@ package cloudhub
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/golang/glog"
@@ -156,15 +157,12 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		}
 	}
 
-	// Unmarshal message content
-	createVolumeResponse := &csi.CreateVolumeResponse{}
-	err = json.Unmarshal(data, createVolumeResponse)
-	if err != nil {
-		glog.Errorf("Unmarshal message content with error: %s", err)
-		return nil, err
+	if string(data) != "OK" {
+		glog.Errorf("CreateVolume with error: %s", string(data))
+		return nil, errors.New(string(data))
 	}
 
-	/*createVolumeResponse := &csi.CreateVolumeResponse{}
+	createVolumeResponse := &csi.CreateVolumeResponse{}
 	if req.GetVolumeContentSource() != nil {
 		createVolumeResponse = &csi.CreateVolumeResponse{
 			Volume: &csi.Volume{
@@ -182,7 +180,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 				VolumeContext: req.GetParameters(),
 			},
 		}
-	}*/
+	}
 	return createVolumeResponse, nil
 }
 
@@ -246,16 +244,12 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 		}
 	}
 
-	// Unmarshal message content
-	deleteVolumeResponse := &csi.DeleteVolumeResponse{}
-	err = json.Unmarshal(data, deleteVolumeResponse)
-	if err != nil {
-		glog.Errorf("Unmarshal message content with error: %s", err)
-		return nil, err
+	if string(data) != "OK" {
+		glog.Errorf("DeleteVolume with error: %s", string(data))
+		return nil, errors.New(string(data))
 	}
 
-	glog.V(4).Infof("volume deleted ok: %s", req.GetVolumeId())
-
+	deleteVolumeResponse := &csi.DeleteVolumeResponse{}
 	return deleteVolumeResponse, nil
 }
 
@@ -328,13 +322,12 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		}
 	}
 
-	// Unmarshal message content
-	controllerPublishVolumeResponse := &csi.ControllerPublishVolumeResponse{}
-	err = json.Unmarshal(data, controllerPublishVolumeResponse)
-	if err != nil {
-		glog.Errorf("Unmarshal message content with error: %s", err)
-		return nil, err
+	if string(data) != "OK" {
+		glog.Errorf("ControllerPublishVolume with error: %s", string(data))
+		return nil, errors.New(string(data))
 	}
+
+	controllerPublishVolumeResponse := &csi.ControllerPublishVolumeResponse{}
 	return controllerPublishVolumeResponse, nil
 
 	/* Publish Volume Info
@@ -407,13 +400,12 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		}
 	}
 
-	// Unmarshal message content
-	controllerUnpublishVolumeResponse := &csi.ControllerUnpublishVolumeResponse{}
-	err = json.Unmarshal(data, controllerUnpublishVolumeResponse)
-	if err != nil {
-		glog.Errorf("Unmarshal message content with error: %s", err)
-		return nil, err
+	if string(data) != "OK" {
+		glog.Errorf("ControllerUnpublishVolume with error: %s", string(data))
+		return nil, errors.New(string(data))
 	}
+
+	controllerUnpublishVolumeResponse := &csi.ControllerUnpublishVolumeResponse{}
 	return controllerUnpublishVolumeResponse, nil
 }
 
