@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/golang/glog"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/pborman/uuid"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
@@ -113,7 +114,15 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		glog.Errorf("Build message resource failed with error: %s", err)
 		return nil, err
 	}
-	msg.Content = req
+
+	m := jsonpb.Marshaler{}
+	js, err := m.MarshalToString(req)
+	if err != nil {
+		glog.Errorf("MarshalToString failed with error: %s", err)
+		return nil, err
+	}
+	glog.Infof("MarshalToString: %s", js)
+	msg.Content = js
 	msg.BuildRouter("cloudhub", CSIGroupResource, resource, CSIOperationTypeCreateVolume)
 
 	// Marshal message
