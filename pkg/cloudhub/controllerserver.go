@@ -143,12 +143,16 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		return nil, err
 	}
 
+	glog.Infof("CreateVolume result.Content: %v", result.GetContent())
+
 	// Get message content
 	var data []byte
 	switch result.Content.(type) {
 	case []byte:
+		glog.Infof("CreateVolume []byte")
 		data = result.GetContent().([]byte)
 	default:
+		glog.Infof("CreateVolume default")
 		var err error
 		data, err = json.Marshal(result.GetContent())
 		if err != nil {
@@ -157,6 +161,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		}
 	}
 
+	glog.Infof("CreateVolume string(data) : %s", string(data))
 	if string(data) != "OK" {
 		glog.Errorf("CreateVolume with error: %s", string(data))
 		return nil, errors.New(string(data))
