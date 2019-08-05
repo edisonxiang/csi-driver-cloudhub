@@ -143,7 +143,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		return nil, err
 	}
 
-	glog.Infof("CreateVolume result.Content: %v", result.GetContent())
+	glog.Infof("CreateVolume result: %v", result)
 
 	// Get message content
 	var data []byte
@@ -161,8 +161,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		}
 	}
 
-	glog.Infof("CreateVolume string(data) : %s", string(data))
-	if string(data) != "OK" {
+	if msg.GetOperation() == model.ResponseErrorOperation {
 		glog.Errorf("CreateVolume with error: %s", string(data))
 		return nil, errors.New(string(data))
 	}
@@ -248,8 +247,25 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 			return nil, err
 		}
 	}
+	glog.Infof("DeleteVolume result: %v", result)
 
-	if string(data) != "OK" {
+	// Get message content
+	var data []byte
+	switch result.Content.(type) {
+	case []byte:
+		glog.Infof("DeleteVolume []byte")
+		data = result.GetContent().([]byte)
+	default:
+		glog.Infof("DeleteVolume default")
+		var err error
+		data, err = json.Marshal(result.GetContent())
+		if err != nil {
+			glog.Errorf("Marshal result content with error: %s", err)
+			return nil, err
+		}
+	}
+
+	if msg.GetOperation() == model.ResponseErrorOperation {
 		glog.Errorf("DeleteVolume with error: %s", string(data))
 		return nil, errors.New(string(data))
 	}
@@ -327,7 +343,25 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		}
 	}
 
-	if string(data) != "OK" {
+	glog.Infof("ControllerPublishVolume result: %v", result)
+
+	// Get message content
+	var data []byte
+	switch result.Content.(type) {
+	case []byte:
+		glog.Infof("ControllerPublishVolume []byte")
+		data = result.GetContent().([]byte)
+	default:
+		glog.Infof("ControllerPublishVolume default")
+		var err error
+		data, err = json.Marshal(result.GetContent())
+		if err != nil {
+			glog.Errorf("Marshal result content with error: %s", err)
+			return nil, err
+		}
+	}
+
+	if msg.GetOperation() == model.ResponseErrorOperation {
 		glog.Errorf("ControllerPublishVolume with error: %s", string(data))
 		return nil, errors.New(string(data))
 	}
@@ -391,12 +425,16 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		return nil, err
 	}
 
+	glog.Infof("ControllerUnpublishVolume result: %v", result)
+
 	// Get message content
 	var data []byte
 	switch result.Content.(type) {
 	case []byte:
+		glog.Infof("ControllerUnpublishVolume []byte")
 		data = result.GetContent().([]byte)
 	default:
+		glog.Infof("ControllerUnpublishVolume default")
 		var err error
 		data, err = json.Marshal(result.GetContent())
 		if err != nil {
@@ -405,7 +443,7 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		}
 	}
 
-	if string(data) != "OK" {
+	if msg.GetOperation() == model.ResponseErrorOperation {
 		glog.Errorf("ControllerUnpublishVolume with error: %s", string(data))
 		return nil, errors.New(string(data))
 	}
