@@ -234,19 +234,6 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 		return nil, err
 	}
 
-	// Get message content
-	var data []byte
-	switch result.Content.(type) {
-	case []byte:
-		data = result.GetContent().([]byte)
-	default:
-		var err error
-		data, err = json.Marshal(result.GetContent())
-		if err != nil {
-			glog.Errorf("Marshal result content with error: %s", err)
-			return nil, err
-		}
-	}
 	glog.Infof("DeleteVolume result: %v", result)
 
 	// Get message content
@@ -327,20 +314,6 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 	if err != nil {
 		glog.Errorf("Unmarshal response failed with error: %v", err)
 		return nil, err
-	}
-
-	// Get message content
-	var data []byte
-	switch result.Content.(type) {
-	case []byte:
-		data = result.GetContent().([]byte)
-	default:
-		var err error
-		data, err = json.Marshal(result.GetContent())
-		if err != nil {
-			glog.Errorf("Marshal result content with error: %s", err)
-			return nil, err
-		}
 	}
 
 	glog.Infof("ControllerPublishVolume result: %v", result)
