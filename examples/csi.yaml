@@ -34,10 +34,11 @@ spec:
           volumeMounts:
           - mountPath: /csi
             name: csi-socket-dir
-        - name: csi-driver-cloudhub
+        - name: csi-hostpath
           image: xiangxinyong/csi-driver-cloudhub:latest
           args:
             - "--v=5"
+            - "--drivername=csi-hostpath"
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--nodeid=$(KUBE_NODE_NAME)"
           env:
