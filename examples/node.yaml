@@ -15,6 +15,7 @@ spec:
       containers:
         - name: node-driver-registrar
           image: quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
+          imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
               exec:
@@ -42,6 +43,7 @@ spec:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
           image: quay.io/k8scsi/hostpathplugin:v1.1.0
+          imagePullPolicy: IfNotPresent
           args:
             - "--drivername=csi-hostpath"
             - "--v=5"

@@ -109,6 +109,7 @@ spec:
       containers:
         - name: csi-provisioner
           image: quay.io/k8scsi/csi-provisioner:v1.2.1
+          imagePullPolicy: IfNotPresent
           args:
             - -v=5
             - --csi-address=/csi/csi.sock
@@ -119,6 +120,7 @@ spec:
               name: csi-socket-dir
         - name: csi-attacher
           image: quay.io/k8scsi/csi-attacher:v1.1.1
+          imagePullPolicy: IfNotPresent
           args:
             - --v=5
             - --csi-address=/csi/csi.sock
@@ -127,6 +129,7 @@ spec:
             name: csi-socket-dir
         - name: csi-hostpath
           image: xiangxinyong/csi-driver-cloudhub:latest
+          imagePullPolicy: IfNotPresent
           args:
             - "--v=5"
             - "--drivername=csi-hostpath"
