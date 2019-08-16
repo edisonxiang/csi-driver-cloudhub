@@ -17,6 +17,7 @@ limitations under the License.
 package cloudhub
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -166,11 +167,25 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		return nil, errors.New(string(data))
 	}
 
+	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		glog.Errorf("CreateVolume decode with error: %v", err)
+		return nil, err
+	}
+
+	response := &csi.CreateVolumeResponse{}
+	err = json.Unmarshal([]byte(decodeBytes), response)
+	if err != nil {
+		glog.Errorf("CreateVolume unmarshal with error: %v", err)
+		return nil, nil
+	}
+	glog.Infof("CreateVolume response: %v", response)
+
 	createVolumeResponse := &csi.CreateVolumeResponse{}
 	if req.GetVolumeContentSource() != nil {
 		createVolumeResponse = &csi.CreateVolumeResponse{
 			Volume: &csi.Volume{
-				VolumeId:      volumeID,
+				VolumeId:      response.Volume.VolumeId,
 				CapacityBytes: req.GetCapacityRange().GetRequiredBytes(),
 				VolumeContext: req.GetParameters(),
 				ContentSource: req.GetVolumeContentSource(),
@@ -179,7 +194,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 	} else {
 		createVolumeResponse = &csi.CreateVolumeResponse{
 			Volume: &csi.Volume{
-				VolumeId:      volumeID,
+				VolumeId:      response.Volume.VolumeId,
 				CapacityBytes: req.GetCapacityRange().GetRequiredBytes(),
 				VolumeContext: req.GetParameters(),
 			},
@@ -257,7 +272,19 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 		return nil, errors.New(string(data))
 	}
 
+	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		glog.Errorf("DeleteVolume decode with error: %v", err)
+		return nil, err
+	}
+
 	deleteVolumeResponse := &csi.DeleteVolumeResponse{}
+	err = json.Unmarshal([]byte(decodeBytes), deleteVolumeResponse)
+	if err != nil {
+		glog.Errorf("DeleteVolume unmarshal with error: %v", err)
+		return nil, nil
+	}
+	glog.Infof("DeleteVolume response: %v", deleteVolumeResponse)
 	return deleteVolumeResponse, nil
 }
 
@@ -339,7 +366,19 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		return nil, errors.New(string(data))
 	}
 
+	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		glog.Errorf("ControllerPublishVolume decode with error: %v", err)
+		return nil, err
+	}
+
 	controllerPublishVolumeResponse := &csi.ControllerPublishVolumeResponse{}
+	err = json.Unmarshal([]byte(decodeBytes), controllerPublishVolumeResponse)
+	if err != nil {
+		glog.Errorf("ControllerPublishVolume unmarshal with error: %v", err)
+		return nil, nil
+	}
+	glog.Infof("ControllerPublishVolume response: %v", controllerPublishVolumeResponse)
 	return controllerPublishVolumeResponse, nil
 
 	/* Publish Volume Info
@@ -421,7 +460,19 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		return nil, errors.New(string(data))
 	}
 
+	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		glog.Errorf("ControllerUnpublishVolume decode with error: %v", err)
+		return nil, err
+	}
+
 	controllerUnpublishVolumeResponse := &csi.ControllerUnpublishVolumeResponse{}
+	err = json.Unmarshal([]byte(decodeBytes), controllerUnpublishVolumeResponse)
+	if err != nil {
+		glog.Errorf("ControllerUnpublishVolume unmarshal with error: %v", err)
+		return nil, nil
+	}
+	glog.Infof("ControllerUnpublishVolume response: %v", controllerUnpublishVolumeResponse)
 	return controllerUnpublishVolumeResponse, nil
 }
 
