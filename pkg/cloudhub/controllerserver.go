@@ -146,6 +146,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 	}
 
 	glog.Infof("CreateVolume result: %v", result)
+	glog.Infof("CreateVolume GetContent: %v", result.GetContent())
 
 	// Get message content
 	var data []byte
@@ -169,7 +170,7 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 	}
 
 	glog.Infof("CreateVolume string:%s", string(data))
-	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
+	decodeBytes, err := base64.StdEncoding.DecodeString(strings.Trim(string(data), "\""))
 	if err != nil {
 		glog.Errorf("CreateVolume decode with error: %v", err)
 		return nil, err
