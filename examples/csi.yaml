@@ -91,21 +91,21 @@ roleRef:
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: csi-hostpath-provisioner
+  name: csi-hostpath-controller
 spec:
-  serviceName: "csi-hostpath-provisioner"
+  serviceName: "csi-hostpath-controller"
   replicas: 1
   selector:
     matchLabels:
-      app: csi-hostpath-provisioner
+      app: csi-hostpath-controller
   template:
     metadata:
       labels:
-        app: csi-hostpath-provisioner
+        app: csi-hostpath-controller
     spec:
       nodeSelector:
         node-role.kubernetes.io/master: ""
-      serviceAccountName: csi-provisioner
+      serviceAccountName: csi-controller
       containers:
         - name: csi-provisioner
           image: quay.io/k8scsi/csi-provisioner:v1.2.1
