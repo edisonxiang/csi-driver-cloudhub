@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/jsonpb"
@@ -167,7 +168,8 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 		return nil, errors.New(string(data))
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	glog.Infof("CreateVolume string:%s", string(data))
+	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
 	if err != nil {
 		glog.Errorf("CreateVolume decode with error: %v", err)
 		return nil, err
@@ -272,7 +274,7 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 		return nil, errors.New(string(data))
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
 	if err != nil {
 		glog.Errorf("DeleteVolume decode with error: %v", err)
 		return nil, err
@@ -366,7 +368,7 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		return nil, errors.New(string(data))
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
 	if err != nil {
 		glog.Errorf("ControllerPublishVolume decode with error: %v", err)
 		return nil, err
@@ -460,7 +462,7 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 		return nil, errors.New(string(data))
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(string(data))
+	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
 	if err != nil {
 		glog.Errorf("ControllerUnpublishVolume decode with error: %v", err)
 		return nil, err
