@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/golang/glog"
 	"github.com/golang/protobuf/jsonpb"
@@ -146,31 +145,15 @@ func (cs *controllerServer) CreateVolume(ctx context.Context, req *csi.CreateVol
 	}
 
 	glog.Infof("CreateVolume result: %v", result)
-	glog.Infof("CreateVolume GetContent: %v", result.GetContent())
-
-	// Get message content
-	var data []byte
-	switch result.Content.(type) {
-	case []byte:
-		glog.Infof("CreateVolume []byte")
-		data = result.GetContent().([]byte)
-	default:
-		glog.Infof("CreateVolume default")
-		var err error
-		data, err = json.Marshal(result.GetContent())
-		if err != nil {
-			glog.Errorf("Marshal result content with error: %s", err)
-			return nil, err
-		}
-	}
+	data := result.GetContent().(string)
 
 	if msg.GetOperation() == model.ResponseErrorOperation {
-		glog.Errorf("CreateVolume with error: %s", string(data))
-		return nil, errors.New(string(data))
+		glog.Errorf("CreateVolume with error: %s", data)
+		return nil, errors.New(data)
 	}
 
-	glog.Infof("CreateVolume string:%s", string(data))
-	decodeBytes, err := base64.StdEncoding.DecodeString(strings.Trim(string(data), "\""))
+	glog.Infof("CreateVolume string:%s", data)
+	decodeBytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		glog.Errorf("CreateVolume decode with error: %v", err)
 		return nil, err
@@ -253,29 +236,14 @@ func (cs *controllerServer) DeleteVolume(ctx context.Context, req *csi.DeleteVol
 	}
 
 	glog.Infof("DeleteVolume result: %v", result)
-
-	// Get message content
-	var data []byte
-	switch result.Content.(type) {
-	case []byte:
-		glog.Infof("DeleteVolume []byte")
-		data = result.GetContent().([]byte)
-	default:
-		glog.Infof("DeleteVolume default")
-		var err error
-		data, err = json.Marshal(result.GetContent())
-		if err != nil {
-			glog.Errorf("Marshal result content with error: %s", err)
-			return nil, err
-		}
-	}
+	data := result.GetContent().(string)
 
 	if msg.GetOperation() == model.ResponseErrorOperation {
-		glog.Errorf("DeleteVolume with error: %s", string(data))
-		return nil, errors.New(string(data))
+		glog.Errorf("DeleteVolume with error: %s", data)
+		return nil, errors.New(data)
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
+	decodeBytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		glog.Errorf("DeleteVolume decode with error: %v", err)
 		return nil, err
@@ -347,29 +315,14 @@ func (cs *controllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 	}
 
 	glog.Infof("ControllerPublishVolume result: %v", result)
-
-	// Get message content
-	var data []byte
-	switch result.Content.(type) {
-	case []byte:
-		glog.Infof("ControllerPublishVolume []byte")
-		data = result.GetContent().([]byte)
-	default:
-		glog.Infof("ControllerPublishVolume default")
-		var err error
-		data, err = json.Marshal(result.GetContent())
-		if err != nil {
-			glog.Errorf("Marshal result content with error: %s", err)
-			return nil, err
-		}
-	}
+	data := result.GetContent().(string)
 
 	if msg.GetOperation() == model.ResponseErrorOperation {
-		glog.Errorf("ControllerPublishVolume with error: %s", string(data))
-		return nil, errors.New(string(data))
+		glog.Errorf("ControllerPublishVolume with error: %s", data)
+		return nil, errors.New(data)
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
+	decodeBytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		glog.Errorf("ControllerPublishVolume decode with error: %v", err)
 		return nil, err
@@ -441,29 +394,14 @@ func (cs *controllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 	}
 
 	glog.Infof("ControllerUnpublishVolume result: %v", result)
-
-	// Get message content
-	var data []byte
-	switch result.Content.(type) {
-	case []byte:
-		glog.Infof("ControllerUnpublishVolume []byte")
-		data = result.GetContent().([]byte)
-	default:
-		glog.Infof("ControllerUnpublishVolume default")
-		var err error
-		data, err = json.Marshal(result.GetContent())
-		if err != nil {
-			glog.Errorf("Marshal result content with error: %s", err)
-			return nil, err
-		}
-	}
+	data := result.GetContent().(string)
 
 	if msg.GetOperation() == model.ResponseErrorOperation {
-		glog.Errorf("ControllerUnpublishVolume with error: %s", string(data))
-		return nil, errors.New(string(data))
+		glog.Errorf("ControllerUnpublishVolume with error: %s", data)
+		return nil, errors.New(data)
 	}
 
-	decodeBytes, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(data)))
+	decodeBytes, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
 		glog.Errorf("ControllerUnpublishVolume decode with error: %v", err)
 		return nil, err
